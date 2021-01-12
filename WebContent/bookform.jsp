@@ -27,7 +27,7 @@
 					<input type="hidden" name="id" value="<c:out value="${book.id}" />" />
 					
 					<label>Title<input type="text" name="title" value="<c:out value="${book.title}" />" /></label>
-					<label>AUthor<input type="text" name="author" value="<c:out value="${book.author}" />" /></label>
+					<label>Author<input type="text" name="author" value="<c:out value="${book.author}" />" /></label>
 					<label>
 						# of Copies
 						<select name="copies">
@@ -40,7 +40,7 @@
 							</c:forEach>
 						</select>
 					</label>
-					<div clas="form-actions">
+					<div class="form-actions">
 						<input type="submit" value="Save" name="submit" />
 						<input type="submit" value="Delete" name="submit" />
 					</div>

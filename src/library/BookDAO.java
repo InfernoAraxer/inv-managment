@@ -21,7 +21,7 @@ public class BookDAO {
 	}
 	
 	public Book getBook(int id) throws SQLException {
-		final String sql = "SELECT * FROM books WHERTE book_id = ?";
+		final String sql = "SELECT * FROM books WHERE book_id = ?";
 		
 		Book book = null;
 		Connection conn = getConnection();
@@ -115,6 +115,8 @@ public class BookDAO {
     	
         Connection conn = getConnection();
         PreparedStatement pstmt = conn.prepareStatement(sql);
+        
+        pstmt.setInt(1, book.getId());
         int affected = pstmt.executeUpdate();
         
         pstmt.close();

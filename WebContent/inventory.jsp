@@ -23,10 +23,26 @@
 		<div>
 			<table border="1">
 				<tr>
-					<td>Title</td>
-					<td>Author</td>
-					<td>Copies</td>
-					<td>Available</td>
+					<td>
+						Title
+						<a href="${pageContext.request.contextPath}/?action=Tup" class="button">▲</a>
+						<a href="${pageContext.request.contextPath}/?action=Tdown" class="button">▼</a>
+					</td>
+					<td>
+						Author
+						<a href="${pageContext.request.contextPath}/?action=Aup" class="button">▲</a>
+						<a href="${pageContext.request.contextPath}/?action=Adown" class="button">▼</a>
+					</td>
+					<td>
+						Copies
+						<a href="${pageContext.request.contextPath}/?action=Cup" class="button">▲</a>
+						<a href="${pageContext.request.contextPath}/?action=Cdown" class="button">▼</a>
+					</td>
+					<td>
+						Available
+						<a href="${pageContext.request.contextPath}/?action=Vup" class="button">▲</a>
+						<a href="${pageContext.request.contextPath}/?action=Vdown" class="button">▼</a>
+					</td>
 					<td>Action</td>
 				</tr>
 				<c:forEach var="book" items="${books}">

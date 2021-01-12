@@ -2,6 +2,8 @@ package application;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.RequestDispatcher;
@@ -41,7 +43,7 @@ public class Controller extends HttpServlet {
 			case "/edit": showEditForm(request, response); break;
 			case "/insert": insertBook(request, response); break;
 			case "/update": updateBook(request, response); break;
-				default: viewBooks(request, response); break;
+			default: viewBooks(request, response); break;
 			}
 		} catch (SQLException e) {
 			throw new ServletException(e);
@@ -49,7 +51,92 @@ public class Controller extends HttpServlet {
 	}
 
 	private void viewBooks(HttpServletRequest request, HttpServletResponse response) throws SQLException, ServletException, IOException {
+		final String action = request.getParameter("action") != null
+				? request.getParameter("action")
+				: "null";
 		List<Book> books = dao.getBooks();
+		ArrayList<String> nameList = new ArrayList<>();
+		ArrayList<Integer> numberList = new ArrayList<>();
+		ArrayList<Book> newList = new ArrayList<>();
+		
+		if (action.charAt(0) == ('T')) {
+			for (int x = 0; x < books.size(); x++) {
+				nameList.add(books.get(x).getTitle());
+			}
+			if (action.substring(1).equals("up")) {
+				Collections.sort(nameList);
+			} else {
+				Collections.sort(nameList, Collections.reverseOrder());
+			}
+			for (String title: nameList) {
+				for (Book book: books) {
+					if (title.equals(book.getTitle())) {
+						newList.add(book);
+						books.remove(books.indexOf(book));
+						break;
+					}
+				}
+			}
+			books = newList;
+		} else if (action.charAt(0) == ('A')) {
+			for (int x = 0; x < books.size(); x++) {
+				nameList.add(books.get(x).getAuthor());
+			}
+			if (action.substring(1).equals("up")) {
+				Collections.sort(nameList);
+			} else {
+				Collections.sort(nameList, Collections.reverseOrder());
+			}
+			for (String author: nameList) {
+				for (Book book: books) {
+					if (author.equals(book.getAuthor())) {
+						newList.add(book);
+						books.remove(books.indexOf(book));
+						break;
+					}
+				}
+			}
+			books = newList;
+		} else if (action.charAt(0) == ('C')) {
+			for (int x = 0; x < books.size(); x++) {
+				numberList.add(books.get(x).getCopies());
+			}
+			if (action.substring(1).equals("up")) {
+				Collections.sort(numberList);
+			} else {
+				Collections.sort(numberList, Collections.reverseOrder());
+			}
+			for (int copies: numberList) {
+				for (Book book: books) {
+					if (copies == book.getCopies()) {
+						newList.add(book);
+						books.remove(books.indexOf(book));
+						break;
+					}
+				}
+			}
+			books = newList;
+		} else if (action.charAt(0) == ('V')) {
+			for (int x = 0; x < books.size(); x++) {
+				numberList.add(books.get(x).getAvailable());
+			}
+			if (action.substring(1).equals("up")) {
+				Collections.sort(numberList);
+			} else {
+				Collections.sort(numberList, Collections.reverseOrder());
+			}
+			for (int available: numberList) {
+				for (Book book: books) {
+					if (available == book.getAvailable()) {
+						newList.add(book);
+						books.remove(books.indexOf(book));
+						break;
+					}
+				}
+			}
+			books = newList;
+		}
+		
 		request.setAttribute("books", books);
 		
 		RequestDispatcher dispatcher = request.getRequestDispatcher("inventory.jsp");
@@ -86,7 +173,7 @@ public class Controller extends HttpServlet {
 				book.setCopies(copies);
 				book.setAvailable(available);
 				break;
-			case "delete": deleteBook(id, request, response); break;
+			case "delete": deleteBook(id, request, response); return;
 		}
 		dao.updateBook(book);
 		
@@ -109,6 +196,7 @@ public class Controller extends HttpServlet {
 	
 	private void deleteBook(final int id, HttpServletRequest request, HttpServletResponse response) throws SQLException, ServletException, IOException {
 		dao.deleteBook(dao.getBook(id));
+		
 		response.sendRedirect(request.getContextPath() + "/");
 	}
 }
