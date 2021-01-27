@@ -17,39 +17,6 @@ h1 {
 	text-transform: uppercase;
 }
 
-table {
-	border-collapse: collapse;
-	margin: 0 auto;
-	width: 80%;
-}
-
-table tr:first-child {
-	background-color: lightblue;
-}
-
-table th {
-	font-weight: bold;
-}
-
-table td {
-	text-align: left;
-}
-
-table td:nth-child(3),
-table td:nth-child(4) {
-	text-align: center;
-}
-
-table td:nth-child(5) div {
-	display:flex;
-	justify-content: space-around;
-}
-
-table th,
-table td {
-	padding: 7px;
-}
-
 form {
 	display: flex;
 	flex-direction: column;
@@ -68,7 +35,7 @@ form label {
 form input, 
 form select {
 	border-radius: 3px;
-	margin-top 1%;
+	margin-top: 1%;
 	padding: 7px;
 }
 
@@ -126,4 +93,8 @@ h2 {
 
 .form-actions input {
 	width: 45%;
+}
+
+.uneditable {
+	background-color: lightgray;
 }

@@ -12,20 +12,20 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import library.Book;
-import library.BookDAO;
+import library.Product;
+import library.ProductDAO;
 
 @SuppressWarnings("serial")
 public class Controller extends HttpServlet {
 	
-	private BookDAO dao;
+	private ProductDAO dao;
 	
 	public void init( ) {
 		final String url = getServletContext().getInitParameter("JDBC-URL");
 		final String username = getServletContext().getInitParameter("JDBC-USERNAME");
 		final String password = getServletContext().getInitParameter("JDBC-PASSWORD");
 		
-		dao = new BookDAO(url, username, password);
+		dao = new ProductDAO(url, username, password);
 	}
 	
 	@Override
@@ -41,84 +41,68 @@ public class Controller extends HttpServlet {
 			switch (action) {
 			case "/add": //intentionally fall through
 			case "/edit": showEditForm(request, response); break;
-			case "/insert": insertBook(request, response); break;
-			case "/update": updateBook(request, response); break;
-			default: viewBooks(request, response); break;
+			case "/insert": insertProduct(request, response); break;
+			case "/update": updateProduct(request, response); break;
+			case "/search": searchProduct(request, response); break;
+			case "/filter": filterProducts(request, response); break;
+			default: viewProducts(request, response); break;
 			}
 		} catch (SQLException e) {
 			throw new ServletException(e);
 		}
 	}
 
-	private void viewBooks(HttpServletRequest request, HttpServletResponse response) throws SQLException, ServletException, IOException {
+	private void viewProducts(HttpServletRequest request, HttpServletResponse response) throws SQLException, ServletException, IOException {
 		final String action = request.getParameter("action") != null
 				? request.getParameter("action")
 				: "null";
-		List<Book> books = dao.getBooks();
+		List<Product> products = dao.getProducts();
 		ArrayList<String> nameList = new ArrayList<>();
 		ArrayList<Integer> numberList = new ArrayList<>();
-		ArrayList<Book> newList = new ArrayList<>();
+		ArrayList<Double> priceList = new ArrayList<>();
+		ArrayList<Product> newList = new ArrayList<>();
 		
-		if (action.charAt(0) == ('T')) {
-			for (int x = 0; x < books.size(); x++) {
-				nameList.add(books.get(x).getTitle());
+		if (action.charAt(0) == ('N')) {
+			for (int x = 0; x < products.size(); x++) {
+				nameList.add(products.get(x).getName());
 			}
 			if (action.substring(1).equals("up")) {
 				Collections.sort(nameList);
 			} else {
 				Collections.sort(nameList, Collections.reverseOrder());
 			}
-			for (String title: nameList) {
-				for (Book book: books) {
-					if (title.equals(book.getTitle())) {
-						newList.add(book);
-						books.remove(books.indexOf(book));
+			for (String name: nameList) {
+				for (Product product: products) {
+					if (name.equals(product.getName())) {
+						newList.add(product);
+						products.remove(products.indexOf(product));
 						break;
 					}
 				}
 			}
-			books = newList;
+			products = newList;
+		} else if (action.charAt(0) == ('D')) {
+			for (int x = 0; x < products.size(); x++) {
+				nameList.add(products.get(x).getDescription());
+			}
+			if (action.substring(1).equals("up")) {
+				Collections.sort(nameList);
+			} else {
+				Collections.sort(nameList, Collections.reverseOrder());
+			}
+			for (String description: nameList) {
+				for (Product product: products) {
+					if (description.equals(product.getDescription())) {
+						newList.add(product);
+						products.remove(products.indexOf(product));
+						break;
+					}
+				}
+			}
+			products = newList;
 		} else if (action.charAt(0) == ('A')) {
-			for (int x = 0; x < books.size(); x++) {
-				nameList.add(books.get(x).getAuthor());
-			}
-			if (action.substring(1).equals("up")) {
-				Collections.sort(nameList);
-			} else {
-				Collections.sort(nameList, Collections.reverseOrder());
-			}
-			for (String author: nameList) {
-				for (Book book: books) {
-					if (author.equals(book.getAuthor())) {
-						newList.add(book);
-						books.remove(books.indexOf(book));
-						break;
-					}
-				}
-			}
-			books = newList;
-		} else if (action.charAt(0) == ('C')) {
-			for (int x = 0; x < books.size(); x++) {
-				numberList.add(books.get(x).getCopies());
-			}
-			if (action.substring(1).equals("up")) {
-				Collections.sort(numberList);
-			} else {
-				Collections.sort(numberList, Collections.reverseOrder());
-			}
-			for (int copies: numberList) {
-				for (Book book: books) {
-					if (copies == book.getCopies()) {
-						newList.add(book);
-						books.remove(books.indexOf(book));
-						break;
-					}
-				}
-			}
-			books = newList;
-		} else if (action.charAt(0) == ('V')) {
-			for (int x = 0; x < books.size(); x++) {
-				numberList.add(books.get(x).getAvailable());
+			for (int x = 0; x < products.size(); x++) {
+				numberList.add(products.get(x).getAvailable());
 			}
 			if (action.substring(1).equals("up")) {
 				Collections.sort(numberList);
@@ -126,56 +110,187 @@ public class Controller extends HttpServlet {
 				Collections.sort(numberList, Collections.reverseOrder());
 			}
 			for (int available: numberList) {
-				for (Book book: books) {
-					if (available == book.getAvailable()) {
-						newList.add(book);
-						books.remove(books.indexOf(book));
+				for (Product product: products) {
+					if (available == product.getAvailable()) {
+						newList.add(product);
+						products.remove(products.indexOf(product));
 						break;
 					}
 				}
 			}
-			books = newList;
+			products = newList;
+		} else if (action.charAt(0) == ('I')) {
+			for (int x = 0; x < products.size(); x++) {
+				numberList.add(products.get(x).getId());
+			}
+			if (action.substring(1).equals("up")) {
+				Collections.sort(numberList);
+			} else {
+				Collections.sort(numberList, Collections.reverseOrder());
+			}
+			for (int id : numberList) {
+				for (Product product: products) {
+					if (id == product.getId()) {
+						newList.add(product);
+						products.remove(products.indexOf(product));
+						break;
+					}
+				}
+			}
+			products = newList;
+		} else if (action.charAt(0) == ('U')) {
+			for (int x = 0; x < products.size(); x++) {
+				priceList.add(products.get(x).getUnitPrice());
+			}
+			if (action.substring(1).equals("up")) {
+				Collections.sort(priceList);
+			} else {
+				Collections.sort(priceList, Collections.reverseOrder());
+			}
+			for (double price: priceList) {
+				for (Product product: products) {
+					if (price == product.getUnitPrice()) {
+						newList.add(product);
+						products.remove(products.indexOf(product));
+						break;
+					}
+				}
+			}
+			products = newList;
 		}
 		
-		request.setAttribute("books", books);
+		request.setAttribute("products", products);
 		
 		RequestDispatcher dispatcher = request.getRequestDispatcher("inventory.jsp");
 		dispatcher.forward(request, response);
 	}
 	
-	private void insertBook(HttpServletRequest request, HttpServletResponse response) throws SQLException, ServletException, IOException {
-		String title = request.getParameter("title");
-		String author = request.getParameter("author");
-		int copies = Integer.parseInt(request.getParameter("copies"));
+	private void searchProduct (HttpServletRequest request, HttpServletResponse response) throws SQLException, ServletException, IOException {
+		final String keyword = request.getParameter("search_bar") != null
+				? request.getParameter("search_bar")
+				: null;
+		final String type = request.getParameter("search_attribute") != null
+				? request.getParameter("search_attribute")
+				: "";
+				
+		if (keyword != null) {
+			List<Product> products = dao.getProducts();
+			List<Product> tempList = new ArrayList<>();
+			
+			//Searches by type and if no type is selected then it defaults to ID
+			
+			if (type.equals("id")) {
+				for (Product product: products) {
+					if (String.valueOf(product.getId()).contains(keyword)) {
+						tempList.add(product);
+					}
+				}
+			} else if (type.equals("description")) {
+				for (Product product: products) {
+					if (String.valueOf(product.getDescription()).contains(keyword)) {
+						tempList.add(product);
+					}
+				}
+			} else if (type.equals("name")) {
+				for (Product product: products) {
+					if (String.valueOf(product.getName()).contains(keyword)) {
+						tempList.add(product);
+					}
+				}
+			} else if (type.equals("unit_price")) {
+				for (Product product: products) {
+					if (String.valueOf(product.getUnitPrice()).contains(keyword)) {
+						tempList.add(product);
+					}
+				}
+			} else {
+				for (Product product: products) {
+					if (String.valueOf(product.getId()).contains(keyword)) {
+						tempList.add(product);
+					}
+				}
+			}
+			
+			products = tempList;
+			tempList = new ArrayList<>();
+			
+			for (int i = 0; i < products.size(); i++) {
+				if (!tempList.contains(products.get(i))) {
+					tempList.add(products.get(i));
+				}
+			}
+
+			products = tempList;
+			tempList = new ArrayList<>();
+			
+			int productSize = products.size();
+			int indexHolder = -1;
+			if (products.size() > 0) {
+				indexHolder = 0;
+			}
+
+			for (int j = 0; j < productSize; j++) {
+				for (int i = 0; i < products.size(); i++) {
+					if (products.get(i).getId() < products.get(indexHolder).getId()) {
+						indexHolder = i;
+					}
+				}
+				tempList.add(products.get(indexHolder));
+				products.remove(indexHolder);
+				indexHolder = 0;
+			}
+			products = tempList;
+			
+			request.setAttribute("products", products);
+			
+			RequestDispatcher dispatcher = request.getRequestDispatcher("inventory.jsp");
+			dispatcher.forward(request, response);
+		} else {
+			List<Product> products = dao.getProducts();
+			request.setAttribute("products", products);
+			
+			RequestDispatcher dispatcher = request.getRequestDispatcher("inventory.jsp");
+			dispatcher.forward(request, response);
+		}
+	}
+	
+	private void filterProducts (HttpServletRequest request, HttpServletResponse response) throws SQLException, ServletException, IOException {
 		
-		dao.insertBook(title,  author,  copies,  copies);
+	}
+	
+	private void insertProduct(HttpServletRequest request, HttpServletResponse response) throws SQLException, ServletException, IOException {
+		String name = request.getParameter("name");
+		String description = request.getParameter("description");
+		int available = Integer.parseInt(request.getParameter("available"));
+		double unitPrice = Double.valueOf(request.getParameter("price"));
+		
+		dao.insertProduct(name, description, available, unitPrice);
 		response.sendRedirect(request.getContextPath() + "/");
 	}
 	
-	private void updateBook(HttpServletRequest request, HttpServletResponse response) throws SQLException, ServletException, IOException {
+	private void updateProduct(HttpServletRequest request, HttpServletResponse response) throws SQLException, ServletException, IOException {
 		final String action = request.getParameter("action") != null
 			? request.getParameter("action")
 			: request.getParameter("submit").toLowerCase();
 		final int id = Integer.parseInt(request.getParameter("id"));
 		
-		Book book = dao.getBook(id);
+		Product product = dao.getProduct(id);
 		switch (action) {
-			case "rent": book.rentMe(); break;
-			case "return": book.returnMe(); break;
+			case "purchase": product.purchaseMe(); break;
 			case "save":
-				String title =request.getParameter("title");
-				String author = request.getParameter("author");
-				int copies = Integer.parseInt(request.getParameter("copies"));
-				int available = book.getAvailable() + (copies - book.getCopies());
+				String name = request.getParameter("name");
+				String description = request.getParameter("description");
+				int available = Integer.parseInt(request.getParameter("available"));
+				double unitPrice = Double.valueOf(request.getParameter("price"));
 				
-				book.setTitle(title);
-				book.setAuthor(author);
-				book.setCopies(copies);
-				book.setAvailable(available);
+				product.setName(name);
+				product.setDescription(description);
+				product.setAvailable(available);
+				product.setUnitPrice(unitPrice);
 				break;
-			case "delete": deleteBook(id, request, response); return;
+			case "delete": deleteProduct(id, request, response); return;
 		}
-		dao.updateBook(book);
+		dao.updateProduct(product);
 		
 		response.sendRedirect(request.getContextPath() + "/");
 	}
@@ -184,18 +299,18 @@ public class Controller extends HttpServlet {
 		try {
 			final int id = Integer.parseInt(request.getParameter("id"));
 			
-			Book book = dao.getBook(id);
-			request.setAttribute("book", book);
+			Product product = dao.getProduct(id);
+			request.setAttribute("product", product);
 		} catch (NumberFormatException e) {
 			
 		} finally {
-			RequestDispatcher dispatcher = request.getRequestDispatcher("bookform.jsp");
+			RequestDispatcher dispatcher = request.getRequestDispatcher("editForm.jsp");
 			dispatcher.forward(request, response);
 		}
 	}
 	
-	private void deleteBook(final int id, HttpServletRequest request, HttpServletResponse response) throws SQLException, ServletException, IOException {
-		dao.deleteBook(dao.getBook(id));
+	private void deleteProduct(final int id, HttpServletRequest request, HttpServletResponse response) throws SQLException, ServletException, IOException {
+		dao.deleteProduct(dao.getProduct(id));
 		
 		response.sendRedirect(request.getContextPath() + "/");
 	}
