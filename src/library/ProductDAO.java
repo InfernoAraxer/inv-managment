@@ -34,8 +34,8 @@ public class ProductDAO {
 			String productName = rs.getString("product_name");
 			String description = rs.getString("description");
 			int available = rs.getInt("available");
-			double unitPrice = rs.getInt("unit_price");
-			
+			double unitPrice = rs.getDouble("unit_price");
+			System.out.print(unitPrice);
 			product = new Product(id, productName, description, available, unitPrice);
 		}
 		
@@ -82,6 +82,7 @@ public class ProductDAO {
         pstmt.setString(2, description);
         pstmt.setInt(3, available);
         pstmt.setDouble(4, unitPrice);
+        
         int affected = pstmt.executeUpdate();
         
         pstmt.close();
@@ -108,95 +109,6 @@ public class ProductDAO {
         conn.close();
         
         return affected == 1;
-    }
-	
-    public List<Product> searchProduct(String keyWord) throws SQLException {
-    	int keyValue = -1;
-    	double keyPrice = -1;
-    	try {
-    		keyValue = Integer.valueOf(keyWord);
-    	} catch (Exception e) {
-    		keyValue = -1;
-    	}
-    	try {
-    		keyPrice = Double.valueOf(keyWord);
-    	} catch (Exception e) {
-    		keyPrice = -1;
-    	}
-    	
-    	
-    	String sql1 = "SELECT * FROM products WHERE product_id = ?";
-    	String sql2 = "SELECT * FROM products WHERE product_name = ?";
-    	String sql3 = "SELECT * FROM products WHERE description = ?";
-    	String sql4 = "SELECT * FROM products WHERE unit_price = ?";
-    	
-    	List<Product> products= new ArrayList<Product>();
-    	Connection conn = getConnection();
-    	PreparedStatement pstmt1 = conn.prepareStatement(sql1);
-    	PreparedStatement pstmt2 = conn.prepareStatement(sql2);
-    	PreparedStatement pstmt3 = conn.prepareStatement(sql3);
-    	PreparedStatement pstmt4 = conn.prepareStatement(sql4);
-    	
-    	pstmt1.setInt(1, keyValue);
-		ResultSet rs = pstmt1.executeQuery();
-		
-		while (rs.next()) {
-			int id = rs.getInt("product_id");
-			String productName = rs.getString("product_name");
-			String description = rs.getString("description");
-			int available = rs.getInt("available");
-			double unitPrice = rs.getDouble("unit_price");
-			
-			products.add(new Product(id, productName, description, available, unitPrice));
-		}
-		
-		pstmt2.setString(1, keyWord);
-		rs = pstmt2.executeQuery();
-		
-		while (rs.next()) {
-			int id = rs.getInt("product_id");
-			String productName = rs.getString("product_name");
-			String description = rs.getString("description");
-			int available = rs.getInt("available");
-			double unitPrice = rs.getDouble("unit_price");
-			
-			products.add(new Product(id, productName, description, available, unitPrice));
-		}
-		
-		pstmt3.setString(1, keyWord);
-		rs = pstmt3.executeQuery();
-		
-		while (rs.next()) {
-			int id = rs.getInt("product_id");
-			String productName = rs.getString("product_name");
-			String description = rs.getString("description");
-			int available = rs.getInt("available");
-			double unitPrice = rs.getDouble("unit_price");
-			
-			products.add(new Product(id, productName, description, available, unitPrice));
-		}
-		
-		pstmt4.setDouble(1, keyPrice);
-		rs = pstmt4.executeQuery();
-		
-		while (rs.next()) {
-			int id = rs.getInt("product_id");
-			String productName = rs.getString("product_name");
-			String description = rs.getString("description");
-			int available = rs.getInt("available");
-			double unitPrice = rs.getDouble("unit_price");
-			
-			products.add(new Product(id, productName, description, available, unitPrice));
-		}
-		
-		rs.close();
-		pstmt1.close();
-		pstmt2.close();
-		pstmt3.close();
-		pstmt4.close();
-		conn.close();
-		
-		return products;
     }
     
     public boolean deleteProduct(Product product) throws SQLException {

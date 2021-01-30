@@ -28,7 +28,7 @@ h1 {
 
 .search-functions {
 	padding: 5px;
-	margin-left: 190px;
+	margin-left: 10%;
 	margin-top: 15px;
 	width: 575px;
 	display: flex; 
@@ -44,10 +44,15 @@ h1 {
 	white-space: nowrap;
 }
 
+.search-bar-label {
+	margin-bottom: 5px;
+}
+
 table {
 	border-collapse: collapse;
 	margin: 0 auto;
 	width: 80%;
+	margin-bottom: 20px;
 }
 
 table tr:first-child {
@@ -135,7 +140,7 @@ table td {
 
 .filter-functions {
 	padding: 5px;
-	margin-right: 190px;
+	margin-right: 10%;
 	width: 415px;
 	display: flex; 
 	border: 1px solid black;
@@ -159,4 +164,9 @@ table td {
     clear: both;
     float: left;
     margin-right: 5px;
+    margin-top: 5px;
+}
+
+.filter-bar-label {
+	margin-top: 5px;
 }

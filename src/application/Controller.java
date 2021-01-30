@@ -167,7 +167,7 @@ public class Controller extends HttpServlet {
 	
 	private void searchProduct (HttpServletRequest request, HttpServletResponse response) throws SQLException, ServletException, IOException {
 		final String keyword = request.getParameter("search_bar") != null
-				? request.getParameter("search_bar")
+				? request.getParameter("search_bar").toUpperCase()
 				: null;
 		final String type = request.getParameter("search_attribute") != null
 				? request.getParameter("search_attribute")
@@ -181,31 +181,31 @@ public class Controller extends HttpServlet {
 			
 			if (type.equals("id")) {
 				for (Product product: products) {
-					if (String.valueOf(product.getId()).contains(keyword)) {
+					if (String.valueOf(product.getId()).toUpperCase().equals(keyword)) {
 						tempList.add(product);
 					}
 				}
 			} else if (type.equals("description")) {
 				for (Product product: products) {
-					if (String.valueOf(product.getDescription()).contains(keyword)) {
+					if (String.valueOf(product.getDescription()).toUpperCase().contains(keyword)) {
 						tempList.add(product);
 					}
 				}
 			} else if (type.equals("name")) {
 				for (Product product: products) {
-					if (String.valueOf(product.getName()).contains(keyword)) {
+					if (String.valueOf(product.getName()).toUpperCase().contains(keyword)) {
 						tempList.add(product);
 					}
 				}
 			} else if (type.equals("unit_price")) {
 				for (Product product: products) {
-					if (String.valueOf(product.getUnitPrice()).contains(keyword)) {
+					if (String.valueOf(product.getUnitPrice()).toUpperCase().contains(keyword)) {
 						tempList.add(product);
 					}
 				}
 			} else {
 				for (Product product: products) {
-					if (String.valueOf(product.getId()).contains(keyword)) {
+					if (String.valueOf(product.getId()).toUpperCase().equals(keyword)) {
 						tempList.add(product);
 					}
 				}
@@ -255,7 +255,84 @@ public class Controller extends HttpServlet {
 	}
 	
 	private void filterProducts (HttpServletRequest request, HttpServletResponse response) throws SQLException, ServletException, IOException {
+		final double keyNumber = Double.valueOf(request.getParameter("filter_bar"));
+		final String attribute = request.getParameter("filter_attribute") != null
+				? request.getParameter("filter_attribute")
+				: "";
+		final String type = request.getParameter("filter_type") != null
+				? request.getParameter("filter_type")
+				: "";
+				
+		List<Product> products = dao.getProducts();
+		List<Product> tempList = new ArrayList<>();
 		
+		//Searches by type and if no type is selected then it defaults to Available and greater than
+		
+		if (attribute.equals("price")) {
+			if (type.equals("less_than")) {
+				for (Product product: products) {
+					if (product.getUnitPrice() < keyNumber) {
+						tempList.add(product);
+					}
+				}
+			} else {
+				for (Product product: products) {
+					if (product.getUnitPrice() > keyNumber) {
+						tempList.add(product);
+					}
+				}
+			}
+		} else {
+			if (type.equals("less_than")) {
+				for (Product product: products) {
+					if (product.getAvailable() < keyNumber) {
+						tempList.add(product);
+					}
+				}
+			} else {
+				for (Product product: products) {
+					if (product.getAvailable() > keyNumber) {
+						tempList.add(product);
+					}
+				}
+			}
+		}
+		
+		products = tempList;
+		tempList = new ArrayList<>();
+		
+		for (int i = 0; i < products.size(); i++) {
+			if (!tempList.contains(products.get(i))) {
+				tempList.add(products.get(i));
+			}
+		}
+
+		products = tempList;
+		tempList = new ArrayList<>();
+		
+		int productSize = products.size();
+		int indexHolder = -1;
+		if (products.size() > 0) {
+			indexHolder = 0;
+		}
+
+		for (int j = 0; j < productSize; j++) {
+			for (int i = 0; i < products.size(); i++) {
+				if (products.get(i).getId() < products.get(indexHolder).getId()) {
+					indexHolder = i;
+				}
+			}
+			tempList.add(products.get(indexHolder));
+			products.remove(indexHolder);
+			indexHolder = 0;
+		}
+		
+		products = tempList;
+		
+		request.setAttribute("products", products);
+		
+		RequestDispatcher dispatcher = request.getRequestDispatcher("inventory.jsp");
+		dispatcher.forward(request, response);
 	}
 	
 	private void insertProduct(HttpServletRequest request, HttpServletResponse response) throws SQLException, ServletException, IOException {
@@ -300,6 +377,7 @@ public class Controller extends HttpServlet {
 			final int id = Integer.parseInt(request.getParameter("id"));
 			
 			Product product = dao.getProduct(id);
+			System.out.println(product.getUnitPrice());
 			request.setAttribute("product", product);
 		} catch (NumberFormatException e) {
 			

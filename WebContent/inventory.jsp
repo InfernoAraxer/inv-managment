@@ -22,9 +22,8 @@
 		
 			<div class="search-functions">
 				<form action="search">
-					<label>Search Bar:<input type="text" name="search_bar" class="search-bar"/>
+					<label class="search-bar-label">Search Bar:<input type="text" name="search_bar" class="search-bar"/>
 					<input type="submit" value="Search" name="sumbit" class="button"/></label> 
-					<br/>
 					<label>
 						<label><input class="radio" type="radio" name="search_attribute" value="id">&nbsp; ID &nbsp; &nbsp; </label>
 						<label><input class="radio" type="radio" name="search_attribute" value="name">&nbsp; Name &nbsp; &nbsp; </label>
@@ -36,14 +35,6 @@
 			
 			<div class="filter-functions">
 				<form action="filter">
-					<label>Filter From:
-					<select name="filter_bar" class="filter-bar">
-								<c:forEach begin="0" end="100" varStatus="loop">
-									<option value="${loop.index}">${loop.index}</option>
-								</c:forEach>
-					</select>
-					<input type="submit" value="Filter" name="sumbit" class="button"/></label> 
-					<br/>
 					<label>
 						<label>&nbsp; &nbsp; &nbsp; &nbsp; <input class="radio" type="radio" name="filter_attribute" value="price">&nbsp; Unit Price &nbsp; &nbsp; </label>
 						<label><input class="radio" type="radio" name="filter_attribute" value="available">&nbsp; Available </label>
@@ -52,6 +43,9 @@
 						<label>&nbsp; &nbsp; <input class="radio" type="radio" name="filter_type" value="greater_than">&nbsp; Greater Than &nbsp; &nbsp; </label>
 						<label><input class="radio" type="radio" name="filter_type" value="less_than">&nbsp; Less Than &nbsp; </label>
 					</label>
+					<label class="filter-bar-label">Filter From:
+					<input type="text" name="filter_bar" class="filter-bar"/>
+					<input type="submit" value="Filter" name="sumbit" class="button"/></label> 
 				</form>
 			</div>
 			

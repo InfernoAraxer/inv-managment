@@ -31,19 +31,7 @@
 					<label>Product Name<input type="text" name="name" value="<c:out value="${product.name}" />" /></label>
 					<label>Description<input type="text" name="description" value="<c:out value="${product.description}" />" /></label>
 					<label>Unit Price<input type="text" name="price" value="<fmt:formatNumber value = "${product.unitPrice}" currencySymbol="" type = "currency"/>" /></label>
-					
-					<label>
-						# Available
-						<select name="available">
-							<c:forEach begin="0" end="100" varStatus="loop">
-								<option value="${loop.index}" 
-									<c:if test="${product.available == loop.index}">selected</c:if>
-								>
-									${loop.index}
-								</option>
-							</c:forEach>
-						</select>
-					</label>
+					<label>Available<input type="text" name="available" value="<c:out value="${product.available}" />" /></label>
 					<div class="form-actions">
 						<input type="submit" value="Save" name="submit" />
 						<input type="submit" value="Delete" name="submit" />
@@ -59,14 +47,7 @@
 					<label>Product Name<input type="text" name="name" /></label>
 					<label>Description<input type="text" name="description" /></label>
 					<label>Unit Price<input type="text" name="price" /></label>
-					<label>
-						# Available
-							<select name="available">
-								<c:forEach begin="0" end="100" varStatus="loop">
-									<option value="${loop.index}">${loop.index}</option>
-								</c:forEach>
-							</select>
-						</label>
+					<label># Available<input type="text" name="available" /></label>
 					<input type="submit" value="Add" name="sumbit" />
 				</form>
 			</c:if>
